@@ -17,10 +17,11 @@ class Bot:
             best=-100000
             possible=[]
             for l in legal:
-                herustic=self.game.field.h1(l,self.game.my_botid, self.game.players) *-1
+                herustic=self.game.field.h1(l,self.game.my_botid, self.game.players) #*-1
                 if herustic > best:
                     possible=[]
                     possible.append(l)
+                    best=herustic
                 elif herustic == best:
                     possible.append(l)
             (_,chosen)=(_, chosen) = random.choice(possible)
