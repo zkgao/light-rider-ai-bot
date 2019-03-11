@@ -113,21 +113,32 @@ class Board:
         while self.is_legal(t_row,t_col,my_id):
             t_row +=1
             count +=1
+        tmp=count
+        count=0
         t_row = my_player.row + o_row
         t_col = my_player.col + o_col
         while self.is_legal(t_row,t_col,my_id):
             t_col +=1
             count +=1
+        if count < tmp and count > 0:
+            tmp=count
+        count=0
         t_row = my_player.row + o_row
         t_col = my_player.col + o_col
         while self.is_legal(t_row,t_col,my_id):
             t_row -=1
             count +=1
+        if count < tmp and count > 0:
+            tmp=count
+        count=0
         t_row = my_player.row + o_row
         t_col = my_player.col + o_col
         while self.is_legal(t_row,t_col,my_id):
             t_col -=1
             count +=1
-        return count
+        if count < tmp and count > 0:
+            tmp=count
+        count=0
+        return tmp
 
 
