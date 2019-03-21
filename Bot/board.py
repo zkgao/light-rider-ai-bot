@@ -198,4 +198,20 @@ class Board:
         count=0
         return tmp
 
+    def field_forward(self, move, p_id, players):
+        curr_player = players[p_id]
+        old_row, old_col = curr_player.row, curr_player.col
+        ((o_row, o_col),_) = move
+        new_row, new_col = curr_player.row + o_row, curr_player.col + o_col
+        self.cell[old_row][old_col] = [S_BLOCKED];
+        self.cell[new_row][new_col] = [CHARTABLE[p_id][1]]
+        curr_player.row, curr_player.col = new_row, new_col
 
+    def field_reverse(self, move, p_id, players):
+        curr_player = players[p_id]
+        old_row, old_col = curr_player.row, curr_player.col
+        ((o_row, o_col),_) = move
+        new_row, new_col = curr_player.row - o_row, curr_player.col - o_col
+        self.cell[old_row][old_col] = [S_EMPTY];
+        self.cell[new_row][new_col] = [CHARTABLE[p_id][1]]
+        curr_player.row, curr_player.col = new_row, new_col
