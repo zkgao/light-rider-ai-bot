@@ -104,11 +104,10 @@ class Board:
         sys.stderr.write("\n")
         sys.stderr.flush()
         
-    def h1(self,move,my_id, players):
+    def h1(self,my_id, players):
         my_player = players[my_id]
-        ((o_row,o_col),_)=move
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row 
+        t_col = my_player.col
         count=0
         while self.is_legal(t_row,t_col,my_id):
             t_row +=1
@@ -129,11 +128,10 @@ class Board:
             t_col -=1
             count +=1
         return count
-    def h2(self,move,my_id, players):
+    def h2(self,my_id, players):
         my_player = players[my_id]
-        ((d_row,d_col),d_dir)=move
-        t_row = my_player.row + d_row
-        t_col = my_player.col + d_col
+        t_row = my_player.row 
+        t_col = my_player.col
         openlist=[]
         tlist=self.get_adjacent(t_row,t_col,my_id)
         openlist.extend(tlist)
@@ -157,19 +155,17 @@ class Board:
                         depth[t_row*self.width+t_col]=depth[c_row*self.width+c_col]+1
                         count+=1
         return count,depth.copy()   
-    def ki(self,move,my_id, players):
+    def ki(self,my_id, players):
         my_player = players[my_id]
-        ((d_row,d_col),d_dir)=move
-        t_row = my_player.row + d_row
-        t_col = my_player.col + d_col
+        t_row = my_player.row 
+        t_col = my_player.col
         tlist=self.get_adjacent(t_row,t_col,my_id)
         return len(tlist)
         
-    def h3(self,move,my_id, players):
+    def h3(self,my_id, players):
         my_player = players[my_id]
-        ((o_row,o_col),_)=move
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row 
+        t_col = my_player.col
         count=0
         while self.is_legal(t_row,t_col,my_id):
             t_row +=1
