@@ -63,11 +63,11 @@ class Board:
         row, col = loc
         return self.is_legal(row, col)
 
-    def get_adjacent(self, row, col):
+    def get_adjacent(self, row, col,my_id):
         result = []
         for (o_row, o_col), _ in DIRS:
             t_row, t_col = o_row + row, o_col + col
-            if self.is_legal(t_row, t_col):
+            if self.is_legal(t_row, t_col,my_id):
                 result.append((t_row, t_col))
         return result
 
@@ -113,32 +113,49 @@ class Board:
         while self.is_legal(t_row,t_col,my_id):
             t_row +=1
             count +=1
-        tmp=count
-        count=0
         t_row = my_player.row + o_row
         t_col = my_player.col + o_col
         while self.is_legal(t_row,t_col,my_id):
             t_col +=1
             count +=1
-        if count < tmp and count > 0:
-            tmp=count
-        count=0
         t_row = my_player.row + o_row
         t_col = my_player.col + o_col
         while self.is_legal(t_row,t_col,my_id):
             t_row -=1
             count +=1
-        if count < tmp and count > 0:
-            tmp=count
-        count=0
         t_row = my_player.row + o_row
         t_col = my_player.col + o_col
         while self.is_legal(t_row,t_col,my_id):
             t_col -=1
             count +=1
-        if count < tmp and count > 0:
-            tmp=count
+        return count
+    def h2(self,move,my_id, players):
+        my_player = players[my_id]
+        ((d_row,d_col),d_dir)=move
+        t_row = my_player.row + d_row
+        t_col = my_player.col + d_col
+        openlist=[]
+        tlist=self.get_adjacent(t_row,t_col,my_id)
+        openlist.extend(tlist)
+        closedlist=[]
+        closedlist.append((t_row,t_col))
+        depth=[400]*400
+        for tl in tlist:
+            (tl_row,tl_col)=tl
+            depth[self.width*tl_row+tl_col]=1
+        depth[self.width*t_row+t_col]=0
         count=0
-        return tmp
+        while(len(openlist)!= 0):
+            current=openlist.pop(0)
+            closedlist.append(current)
+            (c_row,c_col)=current
+            for (o_row, o_col), _ in DIRS:
+                t_row, t_col = o_row + c_row, o_col + c_col
+                if self.is_legal(t_row, t_col,my_id):
+                    if not (t_row,t_col) in closedlist and not (t_row,t_col) in openlist:
+                        openlist.append((t_row, t_col))
+                        depth[t_row*self.width+t_col]=depth[c_row*self.width+c_col]+1
+                        count+=1
+        return count,depth.copy()    
 
 
