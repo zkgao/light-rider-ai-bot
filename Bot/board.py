@@ -156,6 +156,50 @@ class Board:
                         openlist.append((t_row, t_col))
                         depth[t_row*self.width+t_col]=depth[c_row*self.width+c_col]+1
                         count+=1
-        return count,depth.copy()    
+        return count,depth.copy()   
+    def ki(self,move,my_id, players):
+        my_player = players[my_id]
+        ((d_row,d_col),d_dir)=move
+        t_row = my_player.row + d_row
+        t_col = my_player.col + d_col
+        tlist=self.get_adjacent(t_row,t_col,my_id)
+        return len(tlist)
+        
+    def h3(self,move,my_id, players):
+        my_player = players[my_id]
+        ((o_row,o_col),_)=move
+        t_row = my_player.row + o_row
+        t_col = my_player.col + o_col
+        count=0
+        while self.is_legal(t_row,t_col,my_id):
+            t_row +=1
+            count +=1
+        tmp=count
+        count=0
+        t_row = my_player.row + o_row
+        t_col = my_player.col + o_col
+        while self.is_legal(t_row,t_col,my_id):
+            t_col +=1
+            count +=1
+        if count < tmp and count > 0:
+            tmp=count
+        count=0
+        t_row = my_player.row + o_row
+        t_col = my_player.col + o_col
+        while self.is_legal(t_row,t_col,my_id):
+            t_row -=1
+            count +=1
+        if count < tmp and count > 0:
+            tmp=count
+        count=0
+        t_row = my_player.row + o_row
+        t_col = my_player.col + o_col
+        while self.is_legal(t_row,t_col,my_id):
+            t_col -=1
+            count +=1
+        if count < tmp and count > 0:
+            tmp=count
+        count=0
+        return tmp
 
 
