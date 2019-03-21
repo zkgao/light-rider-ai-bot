@@ -8,7 +8,14 @@ class Bot:
 
     def setup(self, game):
         self.game = game
-
+    def get_herustic(self,l):
+            reachable,hlist=self.game.field.h2(l,self.game.my_botid, self.game.players)
+            enemy_reachable,hlist2=self.game.field.h2(l,self.game.my_botid ^ 1, self.game.players)
+            territory=0
+            for i in range(400):
+                if hlist[i] < hlist2[i]:
+                    territory+=1
+            return reachable,enemy_reachable,territory
     def do_turn(self):
         legal = self.game.field.legal_moves(self.game.my_botid, self.game.players)
         if len(legal) == 0:
@@ -17,8 +24,8 @@ class Bot:
             best=-100000
             possible=[]
             for l in legal:
-                herustic=self.game.field.h1(l,self.game.my_botid, self.game.players) #*-1
-                if herustic > best:
+                herustic,herustic2,herustic3=self.get_herustic(l)
+                if -1*herustic2 > best:
                     possible=[]
                     possible.append(l)
                     best=herustic
