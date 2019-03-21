@@ -48,7 +48,7 @@ class Bot:
             return LOST_VALUE
         if depth == TREE_DEPTH:
             # return self.game.field.h1(curr_botid, self.game.players)
-            h1,h2,h3,h4,h5,h6,h7=self.get_herustic(l)
+            h1,h2,h3,h4,h5,h6,h7=self.get_herustic()
             weight=[1,0,0,0,0,0,0]
             herustic=h1*weight[0]+h2*weight[1]+h3*weight[2]+h4*weight[3]+h5*weight[4]+h6*weight[5]+h7*weight[6]
             return herustic
