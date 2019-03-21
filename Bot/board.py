@@ -112,18 +112,18 @@ class Board:
         while self.is_legal(t_row,t_col,my_id):
             t_row +=1
             count +=1
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row 
+        t_col = my_player.col 
         while self.is_legal(t_row,t_col,my_id):
             t_col +=1
             count +=1
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row 
+        t_col = my_player.col 
         while self.is_legal(t_row,t_col,my_id):
             t_row -=1
             count +=1
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row 
+        t_col = my_player.col 
         while self.is_legal(t_row,t_col,my_id):
             t_col -=1
             count +=1
@@ -135,8 +135,8 @@ class Board:
         openlist=[]
         tlist=self.get_adjacent(t_row,t_col,my_id)
         openlist.extend(tlist)
-        closedlist=[]
-        closedlist.append((t_row,t_col))
+        #closedlist=[]
+        #closedlist.append((t_row,t_col))
         depth=[400]*400
         for tl in tlist:
             (tl_row,tl_col)=tl
@@ -145,16 +145,19 @@ class Board:
         count=0
         while(len(openlist)!= 0):
             current=openlist.pop(0)
-            closedlist.append(current)
+            #closedlist.append(current)
             (c_row,c_col)=current
             for (o_row, o_col), _ in DIRS:
                 t_row, t_col = o_row + c_row, o_col + c_col
                 if self.is_legal(t_row, t_col,my_id):
-                    if not (t_row,t_col) in closedlist and not (t_row,t_col) in openlist:
-                        openlist.append((t_row, t_col))
+                    if not depth[t_row*self.width+t_col] == 400:
+                        
                         depth[t_row*self.width+t_col]=depth[c_row*self.width+c_col]+1
+                        if depth[t_row*self.width+t_col]>7:
+                            return count,depth
+                        openlist.append((t_row, t_col))
                         count+=1
-        return count,depth.copy()   
+        return count,depth   
     def ki(self,my_id, players):
         my_player = players[my_id]
         t_row = my_player.row 
@@ -172,24 +175,24 @@ class Board:
             count +=1
         tmp=count
         count=0
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row 
+        t_col = my_player.col 
         while self.is_legal(t_row,t_col,my_id):
             t_col +=1
             count +=1
         if count < tmp and count > 0:
             tmp=count
         count=0
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row
+        t_col = my_player.col 
         while self.is_legal(t_row,t_col,my_id):
             t_row -=1
             count +=1
         if count < tmp and count > 0:
             tmp=count
         count=0
-        t_row = my_player.row + o_row
-        t_col = my_player.col + o_col
+        t_row = my_player.row 
+        t_col = my_player.col 
         while self.is_legal(t_row,t_col,my_id):
             t_col -=1
             count +=1
