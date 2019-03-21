@@ -8,13 +8,13 @@ class Bot:
 
     def setup(self, game):
         self.game = game
-    def get_herustic(self,l):
-            total_hit_dis=self.game.field.h1(l,self.game.my_botid, self.game.players)
-            min_hit_dis=self.game.field.h3(l,self.game.my_botid, self.game.players)
-            ki=self.game.field.ki(l,self.game.my_botid, self.game.players)
-            enemy_ki=self.game.field.ki(l,self.game.my_botid ^ 1, self.game.players)
-            reachable,hlist=self.game.field.h2(l,self.game.my_botid, self.game.players)
-            enemy_reachable,hlist2=self.game.field.h2(l,self.game.my_botid ^ 1, self.game.players)
+    def get_herustic():
+            total_hit_dis=self.game.field.h1(self.game.my_botid, self.game.players)
+            min_hit_dis=self.game.field.h3(self.game.my_botid, self.game.players)
+            ki=self.game.field.ki(self.game.my_botid, self.game.players)
+            enemy_ki=self.game.field.ki(self.game.my_botid ^ 1, self.game.players)
+            reachable,hlist=self.game.field.h2(self.game.my_botid, self.game.players)
+            enemy_reachable,hlist2=self.game.field.h2(self.game.my_botid ^ 1, self.game.players)
             territory=0
             for i in range(400):
                 if hlist[i] < hlist2[i]:
