@@ -1,8 +1,9 @@
 import random
 import sys
 
-TREE_DEPTH = 3
+TREE_DEPTH = 5
 LOST_VALUE = -10000
+INF = 100000
 
 class Bot:
 
@@ -28,12 +29,12 @@ class Bot:
         if len(legal) == 0:
             self.game.issue_order_pass()
         else:
-            best_value = -100000
+            best_value = -INF
             best_move = None
             possible=[]
             for move in legal:
                 self.game.field.field_forward(move, self.game.my_botid, self.game.players)
-                value = self.minimax((self.game.my_botid + 1)%2, 0, False)
+                value = self.minimax((self.game.my_botid + 1)%2, 0, False, -INF, INF)
                 self.game.field.field_reverse(move, self.game.my_botid, self.game.players)
                 if value > best_value:
                     best_value = value
@@ -44,7 +45,7 @@ class Bot:
             (_, chosen) = random.choice(possible)
             self.game.issue_order(chosen)
             
-    def minimax(self, curr_botid, depth, maximizing_player):
+    def minimax(self, curr_botid, depth, maximizing_player, alpha, beta):
         legal = self.game.field.legal_moves(curr_botid, self.game.players)
         if len(legal) == 0:
             #state is terminal
@@ -57,22 +58,24 @@ class Bot:
             return herustic
         next_botid = (curr_botid + 1) % 2
         if maximizing_player:
-            best_value = -10000
+            best_value = -INF
             for move in legal:
                 self.game.field.field_forward(move, curr_botid, self.game.players)
-                value = self.minimax(next_botid, depth + 1, False)
+                value = self.minimax(next_botid, depth + 1, False, alpha, beta)
                 self.game.field.field_reverse(move, curr_botid, self.game.players)
-                if value > best_value:
-                    best_value = value
-                    # best_move = move
+                best_value = max(best_value, value)
+                alpha = max(alpha, best_value)
+                if beta <= alpha:
+                    break
             return best_value
         if not maximizing_player:
-            best_value = 10000
+            best_value = INF
             for move in legal:
                 self.game.field.field_forward(move, curr_botid, self.game.players)
-                value = self.minimax(next_botid, depth + 1, True)
+                value = self.minimax(next_botid, depth + 1, True, alpha, beta)
                 self.game.field.field_reverse(move, curr_botid, self.game.players)
-                if value < best_value:
-                    best_value = value
-                    # best_move = move
+                best_value = min(best_value, value)
+                beta = min(beta, best_value)
+                if beta <= alpha:
+                    break
             return best_value          
