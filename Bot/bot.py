@@ -1,8 +1,9 @@
 import random
 import sys
 
-TREE_DEPTH = 5
+TREE_DEPTH = 4
 LOST_VALUE = -10000
+WIN_VALUE = 10000
 INF = 100000
 
 class Bot:
@@ -12,18 +13,23 @@ class Bot:
 
     def setup(self, game):
         self.game = game
-    def get_herustic(self):
-            total_hit_dis=self.game.field.h1(self.game.my_botid, self.game.players)
-            min_hit_dis=self.game.field.h3(self.game.my_botid, self.game.players)
-            ki=self.game.field.ki(self.game.my_botid, self.game.players)
-            enemy_ki=self.game.field.ki(self.game.my_botid ^ 1, self.game.players)
-            reachable,hlist=self.game.field.h2(self.game.my_botid, self.game.players)
-            enemy_reachable,hlist2=self.game.field.h2(self.game.my_botid ^ 1, self.game.players)
+    def get_herustic(self, curr_botid):
+            # total_hit_dis = self.game.field.h1(self.game.my_botid, self.game.players)
+            # min_hit_dis = self.game.field.h3(self.game.my_botid, self.game.players)
+            ki=self.game.field.ki(curr_botid, self.game.players)
+            # enemy_ki = self.game.field.ki(self.game.my_botid ^ 1, self.game.players)
+            reachable,hlist = self.game.field.h21(curr_botid, self.game.players)
+            enemy_reachable,hlist2 = self.game.field.h21(curr_botid ^ 1, self.game.players)
             territory=0
-            for i in range(400):
+            for i in range(256):
                 if hlist[i] < hlist2[i]:
-                    territory+=1
-            return reachable,400-enemy_reachable,territory,total_hit_dis,min_hit_dis,ki,4-enemy_ki
+                    territory += 1
+            # return reachable,400-enemy_reachable,territory,total_hit_dis,min_hit_dis,ki,4-enemy_ki
+            return territory + ki
+            # h1,h2,h3,h4,h5,h6,h7=self.get_herustic()
+            # weight=[1,0,0,0,0,0,0]
+            # herustic=h1*weight[0]+h2*weight[1]+h3*weight[2]+h4*weight[3]+h5*weight[4]+h6*weight[5]+h7*weight[6]
+            # return herustic
     def do_turn(self):
         legal = self.game.field.legal_moves(self.game.my_botid, self.game.players)
         if len(legal) == 0:
@@ -32,15 +38,18 @@ class Bot:
             best_value = -INF
             best_move = None
             possible=[]
-            for move in legal:
-                self.game.field.field_forward(move, self.game.my_botid, self.game.players)
-                value = self.minimax((self.game.my_botid + 1)%2, 0, False, -INF, INF)
-                self.game.field.field_reverse(move, self.game.my_botid, self.game.players)
-                if value > best_value:
-                    best_value = value
-                    possible= [move]
-                elif value == best_value:
-                    possible.append(move)
+            if(len(legal) > 1):
+                for move in legal:
+                    self.game.field.field_forward(move, self.game.my_botid, self.game.players)
+                    value = self.minimax(self.game.my_botid ^ 1, 0, False, -INF, INF)
+                    self.game.field.field_reverse(move, self.game.my_botid, self.game.players)
+                    if value > best_value:
+                        best_value = value
+                        possible= [move]
+                    elif value == best_value:
+                        possible.append(move)
+            else:
+                possible.append(legal[0])
             # assert best_move != legal[0], "best move didn't get updated"
             (_, chosen) = random.choice(possible)
             self.game.issue_order(chosen)
@@ -48,15 +57,15 @@ class Bot:
     def minimax(self, curr_botid, depth, maximizing_player, alpha, beta):
         legal = self.game.field.legal_moves(curr_botid, self.game.players)
         if len(legal) == 0:
+            if self.game.my_botid == curr_botid:
             #state is terminal
-            return LOST_VALUE
+                return LOST_VALUE
+            else:
+                return WIN_VALUE
         if depth == TREE_DEPTH:
-            # return self.game.field.h1(curr_botid, self.game.players)
-            h1,h2,h3,h4,h5,h6,h7=self.get_herustic()
-            weight=[0,0,0,0,1,0,0]
-            herustic=h1*weight[0]+h2*weight[1]+h3*weight[2]+h4*weight[3]+h5*weight[4]+h6*weight[5]+h7*weight[6]
-            return herustic
-        next_botid = (curr_botid + 1) % 2
+            # return 0.01 * self.game.field.h8(curr_botid, self.game.players) + 1 * self.game.field.h1(curr_botid, self.game.players) + 100 * self.game.field.ki(curr_botid, self.game.players)
+            return self.get_herustic(curr_botid)
+        next_botid = curr_botid ^ 1
         if maximizing_player:
             best_value = -INF
             for move in legal:
