@@ -1,5 +1,6 @@
 import copy
 import sys
+import random
 
 PLAYER1, PLAYER2, EMPTY, BLOCKED = [0, 1, 2, 3]
 S_PLAYER1, S_PLAYER2, S_EMPTY, S_BLOCKED, = ['0', '1', '.', 'x']
@@ -81,6 +82,7 @@ class Board:
                 result.append(((o_row, o_col), order))
             else:
                 pass
+        random.shuffle(result)
         return result
 
     def output_cell(self, cell):
@@ -128,6 +130,7 @@ class Board:
             t_col -=1
             count +=1
         return count
+
     def h2(self,my_id, players):
         my_player = players[my_id]
         t_row = my_player.row 
@@ -201,12 +204,61 @@ class Board:
         count=0
         return tmp
 
+    def h21(self, my_id, players):
+        my_player = players[my_id]
+        t_row = my_player.row 
+        t_col = my_player.col
+        openlist = []
+        tlist = self.get_adjacent(t_row, t_col, my_id)
+        openlist.extend(tlist)
+        #closedlist=[]
+        #closedlist.append((t_row,t_col))
+        visited = [False] * self.width * self.height
+        depth = [0] * self.width * self.height
+        depth[self.width * t_row + t_col] = 0
+        visited[self.width * t_row + t_col] = True
+        for tl in tlist:
+            (tl_row, tl_col) = tl
+            depth[self.width * tl_row + tl_col] = 1
+        count = 0
+        while len(openlist) != 0:
+            current = openlist.pop(0)
+            #closedlist.append(current)
+            (c_row, c_col) = current
+            tlist = self.get_adjacent(c_row, c_col, my_id)
+            for tl in tlist:
+                (tl_row, tl_col) = tl
+                if not visited[self.width * tl_row + tl_col]:
+                    depth[self.width * tl_row + tl_col] = depth[c_row * self.width + c_col] + 1
+                    count += 1
+                    openlist.append(tl)
+                    visited[self.width * tl_row + tl_col] = True
+                    if depth[self.width * tl_row + tl_col] > 4:
+                            return count, depth
+        return count, depth
+
+    def h8(self, my_id, players):
+        my_player = players[my_id]
+        frontier = [self.get_adjacent(my_player.row, my_player.col, my_id)]
+        count = 0
+        depth = 0
+        while(len(frontier) != 0):
+            level = frontier.pop(0)
+            depth += 1
+            if(depth == 10):
+                break
+            tmp = set()
+            for curr in level:
+                tmp = tmp.union(set(self.get_adjacent(*curr, my_id)))
+            frontier.append(list(tmp))
+        return depth
+
     def field_forward(self, move, p_id, players):
         curr_player = players[p_id]
         old_row, old_col = curr_player.row, curr_player.col
         ((o_row, o_col),_) = move
         new_row, new_col = curr_player.row + o_row, curr_player.col + o_col
-        self.cell[old_row][old_col] = [S_BLOCKED];
+        self.cell[old_row][old_col] = [BLOCKED];
         self.cell[new_row][new_col] = [CHARTABLE[p_id][1]]
         curr_player.row, curr_player.col = new_row, new_col
 
@@ -215,6 +267,6 @@ class Board:
         old_row, old_col = curr_player.row, curr_player.col
         ((o_row, o_col),_) = move
         new_row, new_col = curr_player.row - o_row, curr_player.col - o_col
-        self.cell[old_row][old_col] = [S_EMPTY];
+        self.cell[old_row][old_col] = [EMPTY];
         self.cell[new_row][new_col] = [CHARTABLE[p_id][1]]
         curr_player.row, curr_player.col = new_row, new_col
